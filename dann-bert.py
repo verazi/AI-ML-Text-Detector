@@ -43,7 +43,7 @@ class JsonDataset(Dataset):
     def __len__(self): return len(self.samples)
     def __getitem__(self, idx): return self.samples[idx]
 
-# ─── Gradient Reversal Layer ─────────────────────
+# Gradient Reversal Layer
 class GradientReversal(torch.autograd.Function):
     @staticmethod
     def forward(ctx, x, alpha):
@@ -56,7 +56,7 @@ class GradientReversal(torch.autograd.Function):
 def grad_reverse(x, alpha):
     return GradientReversal.apply(x, alpha)
 
-# ─── 領域鑑別器 ───────────────────────────────────
+# Domain Discriminator
 class DomainDiscriminator(nn.Module):
     def __init__(self, in_dim, hid_dim=DOMAIN_HID):
         super().__init__()
@@ -70,7 +70,7 @@ class DomainDiscriminator(nn.Module):
         x = grad_reverse(x, alpha)
         return self.net(x)
 
-# ─── 建模 ─────────────────────────────────────────
+# model
 class DANNModel(nn.Module):
     def __init__(self):
         super().__init__()
@@ -110,8 +110,6 @@ def train_epoch(model, loader_s, loader_t, optimiser, scheduler, device, epoch):
         # forward
         feat_s, logits_s, dom_s = model(**bs, alpha=alpha)
         _, _, dom_t = model(**bt, alpha=alpha)
-
-        # 分別計算
         loss_cls = nn.CrossEntropyLoss()(logits_s, labels_s)
         ds = torch.zeros(dom_s.size(0), dtype=torch.long, device=device)
         dt = torch.ones (dom_t.size(0), dtype=torch.long, device=device)
