@@ -108,7 +108,7 @@ def main(args):
 
     # Imbalanced‑data handling ──────────────────────────────────────────────
     label_list = [s["labels"].item() for s in train_ds]  # 0 / 1
-    class_counts = torch.bincount(torch.tensor(label_list))  # e.g. tensor([4200,  800])
+    class_counts = torch.bincount(torch.tensor(label_list))  # tensor([4200,  800])
     print("train class counts:", class_counts.tolist())
 
     weights = 1.0 / class_counts[label_list]
